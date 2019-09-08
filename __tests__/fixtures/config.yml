@@ -1,0 +1,9 @@
+feature:
+  head: "feature/*" # Apply label "feature" if head matches "feature/*"
+bugfix: # Apply label "fix" if head matches one of "bugfix/*" or "hotfix/*"
+  head: ["bugfix/*", "hotfix/*"]
+release: # Apply label "release" if base matches "release/*"
+  base: "release/*"
+🧩 Subtask: # Apply label "🧩 Subtask" if head and base match "feature/*"
+  head: "feature/*"
+  base: "feature/*"
