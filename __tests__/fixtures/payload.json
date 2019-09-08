@@ -1,0 +1,18 @@
+{
+  "action": "opened",
+  "pull_request": {
+    "number": 1,
+    "head": {
+      "ref": "feature/awesome-stuff"
+    },
+    "base": {
+      "ref": "master"
+    }
+  },
+  "repository": {
+    "name": "Hello-World",
+    "owner": {
+      "login": "Codertocat"
+    }
+  }
+}
