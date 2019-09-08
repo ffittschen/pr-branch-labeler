@@ -1,0 +1,4 @@
+{
+    "jest.debugMode": true,
+    "prettier.printWidth": 120
+}
