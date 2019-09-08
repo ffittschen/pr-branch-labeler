@@ -4,7 +4,7 @@ import { getConfig } from "./config";
 import { ConfigEntry } from "./ConfigEntry";
 import matcher from "matcher";
 
-const CONFIG_FILENAME = "pr-labeler.yml";
+const CONFIG_FILENAME = "pr-branch-labeler.yml";
 const defaults: ConfigEntry[] = [
   { label: "feature", head: "feature/*", base: undefined },
   { label: "bugfix", head: ["bugfix/*", "hotfix/*"], base: undefined },

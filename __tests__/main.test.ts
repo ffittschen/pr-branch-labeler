@@ -24,7 +24,7 @@ describe("PR Branch Labeler", () => {
     // Arrange
     const getConfigScope = nock("https://api.github.com")
       .persist()
-      .get("/repos/Codertocat/Hello-World/contents/.github/pr-labeler.yml")
+      .get("/repos/Codertocat/Hello-World/contents/.github/pr-branch-labeler.yml")
       .reply(200, configFixture());
 
     const postLabelsScope = nock("https://api.github.com")
@@ -48,7 +48,7 @@ describe("PR Branch Labeler", () => {
       // Arrange
       const getConfigScope = nock("https://api.github.com")
         .persist()
-        .get("/repos/Codertocat/Hello-World/contents/.github/pr-labeler.yml")
+        .get("/repos/Codertocat/Hello-World/contents/.github/pr-branch-labeler.yml")
         .reply(200, configFixture());
 
       const postLabelsScope = nock("https://api.github.com")
@@ -78,7 +78,7 @@ describe("PR Branch Labeler", () => {
       // Arrange
       const getConfigScope = nock("https://api.github.com")
         .persist()
-        .get("/repos/Codertocat/Hello-World/contents/.github/pr-labeler.yml")
+        .get("/repos/Codertocat/Hello-World/contents/.github/pr-branch-labeler.yml")
         .reply(200, configFixture());
 
       const postLabelsScope = nock("https://api.github.com")
@@ -108,7 +108,7 @@ describe("PR Branch Labeler", () => {
       // Arrange
       const getConfigScope = nock("https://api.github.com")
         .persist()
-        .get("/repos/Codertocat/Hello-World/contents/.github/pr-labeler.yml")
+        .get("/repos/Codertocat/Hello-World/contents/.github/pr-branch-labeler.yml")
         .reply(200, configFixture());
 
       const postLabelsScope = nock("https://api.github.com")
@@ -136,7 +136,7 @@ describe("PR Branch Labeler", () => {
       // Arrange
       const getConfigScope = nock("https://api.github.com")
         .persist()
-        .get("/repos/Codertocat/Hello-World/contents/.github/pr-labeler.yml")
+        .get("/repos/Codertocat/Hello-World/contents/.github/pr-branch-labeler.yml")
         .reply(200, configFixture());
 
       const postLabelsScope = nock("https://api.github.com")
@@ -164,7 +164,7 @@ describe("PR Branch Labeler", () => {
       // Arrange
       const getConfigScope = nock("https://api.github.com")
         .persist()
-        .get("/repos/Codertocat/Hello-World/contents/.github/pr-labeler.yml")
+        .get("/repos/Codertocat/Hello-World/contents/.github/pr-branch-labeler.yml")
         .reply(200, configFixture());
 
       const postLabelsScope = nock("https://api.github.com")
@@ -190,7 +190,7 @@ describe("PR Branch Labeler", () => {
       // Arrange
       const getConfigScope = nock("https://api.github.com")
         .persist()
-        .get("/repos/Codertocat/Hello-World/contents/.github/pr-labeler.yml")
+        .get("/repos/Codertocat/Hello-World/contents/.github/pr-branch-labeler.yml")
         .reply(200, configFixture());
 
       const postLabelsScope = nock("https://api.github.com")
@@ -217,7 +217,7 @@ describe("PR Branch Labeler", () => {
     // Arrange
     const getConfigScope = nock("https://api.github.com")
       .persist()
-      .get("/repos/Codertocat/Hello-World/contents/.github/pr-labeler.yml")
+      .get("/repos/Codertocat/Hello-World/contents/.github/pr-branch-labeler.yml")
       .reply(404);
 
     const postLabelsScope = nock("https://api.github.com")
@@ -245,7 +245,7 @@ describe("PR Branch Labeler", () => {
     // Arrange
     const getConfigScope = nock("https://api.github.com")
       .persist()
-      .get("/repos/Codertocat/Hello-World/contents/.github/pr-labeler.yml")
+      .get("/repos/Codertocat/Hello-World/contents/.github/pr-branch-labeler.yml")
       .reply(200, configFixture());
 
     const postLabelsScope = nock("https://api.github.com")
@@ -270,7 +270,7 @@ describe("PR Branch Labeler", () => {
     // Arrange
     const getConfigScope = nock("https://api.github.com")
       .persist()
-      .get("/repos/Codertocat/Hello-World/contents/.github/pr-labeler.yml")
+      .get("/repos/Codertocat/Hello-World/contents/.github/pr-branch-labeler.yml")
       .reply(200, configFixture("invalid-config.yml"));
 
     const postLabelsScope = nock("https://api.github.com")
