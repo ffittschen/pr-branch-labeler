@@ -1,0 +1,3 @@
+feature: 42
+bugfix:
+  foo: ["bugfix/*", "hotfix/*"]

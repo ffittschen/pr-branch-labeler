@@ -163,7 +163,7 @@ describe("PR Branch Labeler", () => {
     const getConfigScope = nock("https://api.github.com")
       .persist()
       .get("/repos/Codertocat/Hello-World/contents/.github/pr-labeler.yml")
-      .reply(404, configFixture());
+      .reply(404);
 
     const postLabelsScope = nock("https://api.github.com")
       .persist()
@@ -209,6 +209,31 @@ describe("PR Branch Labeler", () => {
     expect(getConfigScope.isDone()).toBeTrue();
     expect(postLabelsScope.isDone()).toBeFalse();
     expect.assertions(2);
+  });
+
+  it("throws an error when the provided config is invalid", async () => {
+    // Arrange
+    const getConfigScope = nock("https://api.github.com")
+      .persist()
+      .get("/repos/Codertocat/Hello-World/contents/.github/pr-labeler.yml")
+      .reply(200, configFixture("invalid-config.yml"));
+
+    const postLabelsScope = nock("https://api.github.com")
+      .persist()
+      .post("/repos/Codertocat/Hello-World/issues/42/labels", body => {
+        throw new Error("Shouldn't add labels");
+      })
+      .reply(200);
+
+    main.context.payload = createPullRequestOpenedFixture("feature/FOO-42-awesome-stuff", "master");
+
+    // Act
+    await expect(main.run()).rejects.toThrow(new Error("config.yml has invalid structure."));
+
+    // Assert
+    expect(getConfigScope.isDone()).toBeTrue();
+    expect(postLabelsScope.isDone()).toBeFalse();
+    expect.assertions(3);
   });
 });
 
