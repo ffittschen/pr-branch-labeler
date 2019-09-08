@@ -1,5 +1,6 @@
-feature:
-  head: "feature/*" # Apply label "feature" if head matches "feature/*"
+feature: "feature/*" # Apply label "feature" if head matches "feature/*"
+chore:
+  head: "chore/*" # Apply label "chore" if head matches "chore/*"
 bugfix: # Apply label "fix" if head matches one of "bugfix/*" or "hotfix/*"
   head: ["bugfix/*", "hotfix/*"]
 release: # Apply label "release" if base matches "release/*"

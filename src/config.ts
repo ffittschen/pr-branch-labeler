@@ -30,7 +30,14 @@ function parseConfig(content: string): ConfigEntry[] {
   }
 
   return Object.entries(configObject).reduce((entries: ConfigEntry[], [label, object]: [string, any]) => {
-    entries.push({ label: label, head: object.head, base: object.base });
+    const headPattern = object.head || (typeof object === "string" ? object : undefined);
+    const basePattern = object.base;
+    if (headPattern || basePattern) {
+      entries.push({ label: label, head: headPattern, base: basePattern });
+    } else {
+      throw new Error("config.yml has invalid structure.");
+    }
+
     return entries;
   }, []);
 }
