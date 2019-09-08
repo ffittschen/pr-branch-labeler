@@ -30,7 +30,7 @@ function parseConfig(content: string): ConfigEntry[] {
   }
 
   return Object.entries(configObject).reduce((entries: ConfigEntry[], [label, object]: [string, any]) => {
-    const headPattern = object.head || (typeof object === "string" ? object : undefined);
+    const headPattern = object.head || (typeof object === "string" || Array.isArray(object) ? object : undefined);
     const basePattern = object.base;
     if (headPattern || basePattern) {
       entries.push({ label: label, head: headPattern, base: basePattern });

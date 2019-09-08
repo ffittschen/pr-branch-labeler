@@ -20,7 +20,7 @@ describe("PR Branch Labeler", () => {
     nock.cleanAll();
   });
 
-  it("adds the 'feature' label for 'feature/FOO-42-awesome-stuff' to 'master'", async () => {
+  it("succeeds", async () => {
     // Arrange
     const getConfigScope = nock("https://api.github.com")
       .persist()
@@ -29,12 +29,7 @@ describe("PR Branch Labeler", () => {
 
     const postLabelsScope = nock("https://api.github.com")
       .persist()
-      .post("/repos/Codertocat/Hello-World/issues/42/labels", body => {
-        expect(body).toMatchObject({
-          labels: ["feature"]
-        });
-        return true;
-      })
+      .post("/repos/Codertocat/Hello-World/issues/42/labels")
       .reply(200);
 
     main.context.payload = createPullRequestOpenedFixture("feature/FOO-42-awesome-stuff", "master");
@@ -45,117 +40,177 @@ describe("PR Branch Labeler", () => {
     // Assert
     expect(getConfigScope.isDone()).toBeTrue();
     expect(postLabelsScope.isDone()).toBeTrue();
-    // This is expecting 4 assertions, since the postLabelsScope will do an assertion
-    // when "../src/main" is required the first time
-    expect.assertions(4);
+    expect.assertions(2);
   });
 
-  it("adds the 'bugfix' label for 'bugfix/FOO-42-squash-bugs' to 'master'", async () => {
-    // Arrange
-    const getConfigScope = nock("https://api.github.com")
-      .persist()
-      .get("/repos/Codertocat/Hello-World/contents/.github/pr-labeler.yml")
-      .reply(200, configFixture());
+  describe("shorthand string", () => {
+    it("adds the 'feature' label for 'feature/FOO-42-awesome-stuff' to 'master'", async () => {
+      // Arrange
+      const getConfigScope = nock("https://api.github.com")
+        .persist()
+        .get("/repos/Codertocat/Hello-World/contents/.github/pr-labeler.yml")
+        .reply(200, configFixture());
 
-    const postLabelsScope = nock("https://api.github.com")
-      .persist()
-      .post("/repos/Codertocat/Hello-World/issues/42/labels", body => {
-        expect(body).toMatchObject({
-          labels: ["bugfix"]
-        });
-        return true;
-      })
-      .reply(200);
+      const postLabelsScope = nock("https://api.github.com")
+        .persist()
+        .post("/repos/Codertocat/Hello-World/issues/42/labels", body => {
+          expect(body).toMatchObject({
+            labels: ["feature"]
+          });
+          return true;
+        })
+        .reply(200);
 
-    main.context.payload = createPullRequestOpenedFixture("bugfix/FOO-42-squash-bugs", "master");
+      main.context.payload = createPullRequestOpenedFixture("feature/FOO-42-awesome-stuff", "master");
 
-    // Act
-    await main.run();
+      // Act
+      await main.run();
 
-    // Assert
-    expect(getConfigScope.isDone()).toBeTrue();
-    expect(postLabelsScope.isDone()).toBeTrue();
-    expect.assertions(3);
+      // Assert
+      expect(getConfigScope.isDone()).toBeTrue();
+      expect(postLabelsScope.isDone()).toBeTrue();
+      expect.assertions(3);
+    });
   });
 
-  it("adds the 'bugfix' label for 'hotfix/FOO-42-squash-bugs' to 'master'", async () => {
-    // Arrange
-    const getConfigScope = nock("https://api.github.com")
-      .persist()
-      .get("/repos/Codertocat/Hello-World/contents/.github/pr-labeler.yml")
-      .reply(200, configFixture());
+  describe("shorthand array", () => {
+    it("adds the 'support' label for 'support/FOO-42-assisting' to 'master'", async () => {
+      // Arrange
+      const getConfigScope = nock("https://api.github.com")
+        .persist()
+        .get("/repos/Codertocat/Hello-World/contents/.github/pr-labeler.yml")
+        .reply(200, configFixture());
 
-    const postLabelsScope = nock("https://api.github.com")
-      .persist()
-      .post("/repos/Codertocat/Hello-World/issues/42/labels", body => {
-        expect(body).toMatchObject({
-          labels: ["bugfix"]
-        });
-        return true;
-      })
-      .reply(200);
+      const postLabelsScope = nock("https://api.github.com")
+        .persist()
+        .post("/repos/Codertocat/Hello-World/issues/42/labels", body => {
+          expect(body).toMatchObject({
+            labels: ["support"]
+          });
+          return true;
+        })
+        .reply(200);
 
-    main.context.payload = createPullRequestOpenedFixture("hotfix/FOO-42-squash-bugs", "master");
+      main.context.payload = createPullRequestOpenedFixture("support/FOO-42-assisting", "master");
 
-    // Act
-    await main.run();
+      // Act
+      await main.run();
 
-    // Assert
-    expect(getConfigScope.isDone()).toBeTrue();
-    expect(postLabelsScope.isDone()).toBeTrue();
-    expect.assertions(3);
+      // Assert
+      expect(getConfigScope.isDone()).toBeTrue();
+      expect(postLabelsScope.isDone()).toBeTrue();
+      expect.assertions(3);
+    });
   });
 
-  it("adds the 'release' and 'fix' labels for 'bugfix/FOO-42-changes' to 'release/1.0.0'", async () => {
-    // Arrange
-    const getConfigScope = nock("https://api.github.com")
-      .persist()
-      .get("/repos/Codertocat/Hello-World/contents/.github/pr-labeler.yml")
-      .reply(200, configFixture());
+  describe("Regular head and base usage", () => {
+    it("adds the 'bugfix' label for 'bugfix/FOO-42-squash-bugs' to 'master'", async () => {
+      // Arrange
+      const getConfigScope = nock("https://api.github.com")
+        .persist()
+        .get("/repos/Codertocat/Hello-World/contents/.github/pr-labeler.yml")
+        .reply(200, configFixture());
 
-    const postLabelsScope = nock("https://api.github.com")
-      .persist()
-      .post("/repos/Codertocat/Hello-World/issues/42/labels", body => {
-        expect(body.labels).toIncludeAllMembers(["bugfix", "release"]);
-        return true;
-      })
-      .reply(200);
+      const postLabelsScope = nock("https://api.github.com")
+        .persist()
+        .post("/repos/Codertocat/Hello-World/issues/42/labels", body => {
+          expect(body).toMatchObject({
+            labels: ["bugfix"]
+          });
+          return true;
+        })
+        .reply(200);
 
-    main.context.payload = createPullRequestOpenedFixture("bugfix/FOO-42-changes", "release/1.0.0");
+      main.context.payload = createPullRequestOpenedFixture("bugfix/FOO-42-squash-bugs", "master");
 
-    // Act
-    await main.run();
+      // Act
+      await main.run();
 
-    // Assert
-    expect(getConfigScope.isDone()).toBeTrue();
-    expect(postLabelsScope.isDone()).toBeTrue();
-    expect.assertions(3);
-  });
+      // Assert
+      expect(getConfigScope.isDone()).toBeTrue();
+      expect(postLabelsScope.isDone()).toBeTrue();
+      expect.assertions(3);
+    });
 
-  it("adds the '🧩 Subtask' label for 'feature/FOO-42-part' to 'feature/FOO-42-whole'", async () => {
-    // Arrange
-    const getConfigScope = nock("https://api.github.com")
-      .persist()
-      .get("/repos/Codertocat/Hello-World/contents/.github/pr-labeler.yml")
-      .reply(200, configFixture());
+    it("adds the 'bugfix' label for 'hotfix/FOO-42-squash-bugs' to 'master'", async () => {
+      // Arrange
+      const getConfigScope = nock("https://api.github.com")
+        .persist()
+        .get("/repos/Codertocat/Hello-World/contents/.github/pr-labeler.yml")
+        .reply(200, configFixture());
 
-    const postLabelsScope = nock("https://api.github.com")
-      .persist()
-      .post("/repos/Codertocat/Hello-World/issues/42/labels", body => {
-        expect(body.labels).toIncludeAllMembers(["feature", "🧩 Subtask"]);
-        return true;
-      })
-      .reply(200);
+      const postLabelsScope = nock("https://api.github.com")
+        .persist()
+        .post("/repos/Codertocat/Hello-World/issues/42/labels", body => {
+          expect(body).toMatchObject({
+            labels: ["bugfix"]
+          });
+          return true;
+        })
+        .reply(200);
 
-    main.context.payload = createPullRequestOpenedFixture("feature/FOO-42-part", "feature/FOO-42-whole");
+      main.context.payload = createPullRequestOpenedFixture("hotfix/FOO-42-squash-bugs", "master");
 
-    // Act
-    await main.run();
+      // Act
+      await main.run();
 
-    // Assert
-    expect(getConfigScope.isDone()).toBeTrue();
-    expect(postLabelsScope.isDone()).toBeTrue();
-    expect.assertions(3);
+      // Assert
+      expect(getConfigScope.isDone()).toBeTrue();
+      expect(postLabelsScope.isDone()).toBeTrue();
+      expect.assertions(3);
+    });
+
+    it("adds the 'release' and 'fix' labels for 'bugfix/FOO-42-changes' to 'release/1.0.0'", async () => {
+      // Arrange
+      const getConfigScope = nock("https://api.github.com")
+        .persist()
+        .get("/repos/Codertocat/Hello-World/contents/.github/pr-labeler.yml")
+        .reply(200, configFixture());
+
+      const postLabelsScope = nock("https://api.github.com")
+        .persist()
+        .post("/repos/Codertocat/Hello-World/issues/42/labels", body => {
+          expect(body.labels).toIncludeAllMembers(["bugfix", "release"]);
+          return true;
+        })
+        .reply(200);
+
+      main.context.payload = createPullRequestOpenedFixture("bugfix/FOO-42-changes", "release/1.0.0");
+
+      // Act
+      await main.run();
+
+      // Assert
+      expect(getConfigScope.isDone()).toBeTrue();
+      expect(postLabelsScope.isDone()).toBeTrue();
+      expect.assertions(3);
+    });
+
+    it("adds the '🧩 Subtask' label for 'feature/FOO-42-part' to 'feature/FOO-42-whole'", async () => {
+      // Arrange
+      const getConfigScope = nock("https://api.github.com")
+        .persist()
+        .get("/repos/Codertocat/Hello-World/contents/.github/pr-labeler.yml")
+        .reply(200, configFixture());
+
+      const postLabelsScope = nock("https://api.github.com")
+        .persist()
+        .post("/repos/Codertocat/Hello-World/issues/42/labels", body => {
+          expect(body.labels).toIncludeAllMembers(["feature", "🧩 Subtask"]);
+          return true;
+        })
+        .reply(200);
+
+      main.context.payload = createPullRequestOpenedFixture("feature/FOO-42-part", "feature/FOO-42-whole");
+
+      // Act
+      await main.run();
+
+      // Assert
+      expect(getConfigScope.isDone()).toBeTrue();
+      expect(postLabelsScope.isDone()).toBeTrue();
+      expect.assertions(3);
+    });
   });
 
   it("uses the default config when no config was provided", async () => {
