@@ -2,9 +2,9 @@ name: "PR Branch Labeler"
 description: "Automatically label your PRs based on their branches."
 author: "Florian Fittschen"
 inputs:
-  myInput:
-    description: "Input to use"
-    default: "world"
+  repo-token:
+    description: "Token for the repo. Can be passed in using {{ secrets.GITHUB_TOKEN }}"
+    required: true
 runs:
   using: "node12"
   main: "lib/main.js"
