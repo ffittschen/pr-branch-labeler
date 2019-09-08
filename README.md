@@ -16,12 +16,11 @@ jobs:
   label_prs:
     runs-on: ubuntu-latest
     steps:
-    - name: Filter for opened PRs
-      uses: actions/bin/filter@master
     - name: Label PRs
-      uses: ffittschen/pr-branch-labeler@master
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      if: github.event.action == 'opened' # Only run the action when the PR was first opened
+      uses: ffittschen/pr-branch-labeler@v1
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 ## Configuration
