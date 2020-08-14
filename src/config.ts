@@ -7,12 +7,13 @@ const CONFIG_PATH = ".github";
 
 export async function getConfig(github: github.GitHub, fileName: string, { owner, repo }): Promise<ConfigEntry[]> {
   try {
-    core.debug(`Getting contents of ${path.posix.join(CONFIG_PATH, fileName)}`);
-    const response = await github.repos.getContents({
+    const configFile = {
       owner,
       repo,
       path: path.posix.join(CONFIG_PATH, fileName)
-    });
+    };
+    core.debug(`Getting contents of ${JSON.stringify(configFile)}`);
+    const response = await github.repos.getContents(configFile);
     if (Array.isArray(response.data)) {
       throw new Error(`${fileName} is not a file.`);
     }
@@ -21,6 +22,7 @@ export async function getConfig(github: github.GitHub, fileName: string, { owner
     }
     return parseConfig(response.data.content);
   } catch (error) {
+    core.error(`ERROR! ${JSON.stringify(error)}`);
     if (error.status === 404) {
       return [];
     }

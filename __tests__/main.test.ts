@@ -1,4 +1,3 @@
-import * as core from "@actions/core";
 import "jest-extended";
 import nock from "nock";
 import path from "path";
@@ -14,9 +13,6 @@ describe("PR Branch Labeler", () => {
     process.env["INPUT_REPO-TOKEN"] = repoToken;
     process.env["GITHUB_REPOSITORY"] = "Codertocat/Hello-World";
     process.env["GITHUB_EVENT_PATH"] = path.join(__dirname, "fixtures", "payload.json");
-
-    // Dump core debug to console debug so that --silent works
-    jest.spyOn(core, 'debug').mockImplementation(console.debug);
 
     main = require("../src/main");
   });

@@ -55,7 +55,6 @@ export async function run() {
       }
     }
   } catch (error) {
-    core.debug(JSON.stringify(error))
     core.setFailed(error.message);
     throw error;
   }
