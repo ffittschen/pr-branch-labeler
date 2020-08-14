@@ -1,8 +1,8 @@
 import * as core from "@actions/core";
 import * as github from "@actions/github";
+import matcher from "matcher";
 import { getConfig } from "./config";
 import { ConfigEntry } from "./ConfigEntry";
-import matcher from "matcher";
 
 const CONFIG_FILENAME = "pr-branch-labeler.yml";
 const defaults: ConfigEntry[] = [

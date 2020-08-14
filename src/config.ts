@@ -1,6 +1,6 @@
-import path from "path";
-import yaml from "js-yaml";
 import * as github from "@actions/github";
+import yaml from "js-yaml";
+import path from "path";
 import { ConfigEntry } from "./ConfigEntry";
 
 const CONFIG_PATH = ".github";
@@ -12,7 +12,12 @@ export async function getConfig(github: github.GitHub, fileName: string, { owner
       repo,
       path: path.posix.join(CONFIG_PATH, fileName)
     });
-
+    if (Array.isArray(response.data)) {
+      throw new Error(`${fileName} is not a file.`);
+    }
+    if (response.data.content === undefined) {
+      throw new Error(`${fileName} is empty.`);
+    }
     return parseConfig(response.data.content);
   } catch (error) {
     if (error.status === 404) {

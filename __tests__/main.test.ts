@@ -1,7 +1,7 @@
+import "jest-extended";
 import nock from "nock";
 import path from "path";
-import { readFileSync } from "fs";
-import "jest-extended";
+import { configFixture } from './shared';
 
 nock.disableNetConnect();
 
@@ -291,20 +291,6 @@ describe("PR Branch Labeler", () => {
     expect.assertions(3);
   });
 });
-
-function encodeContent(content: Buffer | ArrayBuffer | SharedArrayBuffer) {
-  return Buffer.from(content).toString("base64");
-}
-
-function configFixture(fileName = "config.yml") {
-  return {
-    type: "file",
-    encoding: "base64",
-    name: fileName,
-    path: `.github/${fileName}`,
-    content: encodeContent(readFileSync(`./__tests__/fixtures/${fileName}`))
-  };
-}
 
 function createPullRequestOpenedFixture(headRef: string, baseRef: string) {
   return {

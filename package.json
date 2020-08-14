@@ -5,8 +5,8 @@
   "description": "Node 12 template action",
   "main": "lib/main.js",
   "scripts": {
-    "build": "tsc",
-    "test": "jest"
+    "build": "npm install && tsc",
+    "test": "npm install && jest"
   },
   "repository": {
     "type": "git",
