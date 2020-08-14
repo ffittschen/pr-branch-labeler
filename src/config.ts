@@ -1,12 +1,13 @@
+import * as core from "@actions/core";
 import * as github from "@actions/github";
 import yaml from "js-yaml";
 import path from "path";
 import { ConfigEntry } from "./ConfigEntry";
-
 const CONFIG_PATH = ".github";
 
 export async function getConfig(github: github.GitHub, fileName: string, { owner, repo }): Promise<ConfigEntry[]> {
   try {
+    core.debug(`Getting contents of ${path.posix.join(CONFIG_PATH, fileName)}`);
     const response = await github.repos.getContents({
       owner,
       repo,
