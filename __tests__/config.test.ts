@@ -29,7 +29,7 @@ describe("Config file loader", () => {
         // Arrange
         const getConfigScope = nock("https://api.github.com")
             .persist()
-            .get("/repos/TheCleric/Hello-World/contents/.github/pr-branch-labeler.yml")
+            .get("/repos/Codertocat/Hello-World/contents/.github/pr-branch-labeler.yml?ref=0123456")
             .reply(200, configFixture());
 
         const octokit = new github.GitHub("token");
@@ -47,7 +47,7 @@ describe("Config file loader", () => {
         // Arrange
         const getConfigScope = nock("https://api.github.com")
             .persist()
-            .get("/repos/TheCleric/Hello-World/contents/.github/pr-branch-labeler.yml")
+            .get("/repos/Codertocat/Hello-World/contents/.github/pr-branch-labeler.yml?ref=0123456")
             .reply(200, configFixture("invalid-config.yml"));
 
         const octokit = new github.GitHub("token");
@@ -64,7 +64,7 @@ describe("Config file loader", () => {
         // Arrange
         const getConfigScope = nock("https://api.github.com")
             .persist()
-            .get("/repos/TheCleric/Hello-World/contents/.github/test")
+            .get("/repos/Codertocat/Hello-World/contents/.github/test?ref=0123456")
             .reply(200, []);
 
         const octokit = new github.GitHub("token");
@@ -81,7 +81,7 @@ describe("Config file loader", () => {
         // Arrange
         const getConfigScope = nock("https://api.github.com")
             .persist()
-            .get("/repos/TheCleric/Hello-World/contents/.github/pr-branch-labeler.yml")
+            .get("/repos/Codertocat/Hello-World/contents/.github/pr-branch-labeler.yml?ref=0123456")
             .reply(200, emptyConfigFixture());
 
         const octokit = new github.GitHub("token");
