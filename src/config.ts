@@ -44,7 +44,7 @@ function parseConfig(content: string): ConfigEntry[] {
     const headPattern = object.head || (typeof object === "string" || Array.isArray(object) ? object : undefined);
     const basePattern = object.base;
     if (headPattern || basePattern) {
-      entries.push({ label: label, head: headPattern, base: basePattern });
+      entries.push(new ConfigEntry({ label: label, head: headPattern, base: basePattern }));
     } else {
       throw new Error("config.yml has invalid structure.");
     }
