@@ -1,17 +1,22 @@
+import * as core from "@actions/core";
 import * as github from "@actions/github";
+import * as Context from '@actions/github/lib/context';
 import yaml from "js-yaml";
 import path from "path";
 import { ConfigEntry } from "./ConfigEntry";
-
 const CONFIG_PATH = ".github";
 
-export async function getConfig(github: github.GitHub, fileName: string, { owner, repo }): Promise<ConfigEntry[]> {
+export async function getConfig(github: github.GitHub, fileName: string, context: Context.Context): Promise<ConfigEntry[]> {
+  console.log('getConfig context', context);
   try {
-    const response = await github.repos.getContents({
-      owner,
-      repo,
-      path: path.posix.join(CONFIG_PATH, fileName)
-    });
+    const configFile = {
+      owner: context.repo.owner,
+      repo: context.repo.repo,
+      path: path.posix.join(CONFIG_PATH, fileName),
+      ref: context.payload.pull_request!.head.sha,
+    };
+    core.debug(`Getting contents of ${JSON.stringify(configFile)}`);
+    const response = await github.repos.getContents(configFile);
     if (Array.isArray(response.data)) {
       throw new Error(`${fileName} is not a file.`);
     }
@@ -20,6 +25,7 @@ export async function getConfig(github: github.GitHub, fileName: string, { owner
     }
     return parseConfig(response.data.content);
   } catch (error) {
+    core.error(`ERROR! ${JSON.stringify(error)}`);
     if (error.status === 404) {
       return [];
     }
