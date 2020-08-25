@@ -30,7 +30,7 @@ export async function run() {
     const labelsToAdd = config.reduce((labels: string[], entry) => {
       if (entry.head && entry.base) {
         if (isMatch(headRef, entry.head) && isMatch(baseRef, entry.base)) {
-          core.debug(`Matched "${headRef}" to "${entry.head}" and "${baseRef}" to "${entry.base}". Setting label to "${entry.label}"`);
+          core.info(`Matched "${headRef}" to "${entry.head}" and "${baseRef}" to "${entry.base}". Setting label to "${entry.label}"`);
           labels.push(entry.label);
         }
       } else if (entry.head && isMatch(headRef, entry.head)) {
