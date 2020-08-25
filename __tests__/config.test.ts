@@ -38,12 +38,45 @@ describe("Config file loader", () => {
 
         // Assert
         expect(getConfigScope.isDone()).toBeTrue();
-        expect(config.length).toEqual(6);
+        expect(config.length).toEqual(11);
         expect.assertions(2);
     });
 
-    it("throws an error for an invalid config file", async () => {
+    it("converts regular expressions", async () => {
+        // Arrange
+        const getConfigScope = nock("https://api.github.com")
+            .persist()
+            .get("/repos/Codertocat/Hello-World/contents/.github/pr-branch-labeler.yml?ref=0123456")
+            .reply(200, configFixture());
 
+        const octokit = new github.GitHub("token");
+
+        const config = await getConfig(octokit, "pr-branch-labeler.yml", context);
+
+        const headRegExpConfigs = config.filter(x => x.headRegExp);
+        const headRegExpConfigsWithRegExp = headRegExpConfigs.filter(x =>
+            Array.isArray(x.headRegExp)
+                ? x.headRegExp.map(x => x !== null && x.exec !== undefined).reduce((a, v) => a && v, true)
+                : x.headRegExp!.exec !== undefined
+        )
+
+        const baseRegExpConfigs = config.filter(x => x.baseRegExp);
+        const baseRegExpConfigsWithRegExp = baseRegExpConfigs.filter(x =>
+            Array.isArray(x.baseRegExp)
+                ? x.baseRegExp.map(x => x !== null && x.exec !== undefined).reduce((a, v) => a && v, true)
+                : x.baseRegExp!.exec !== undefined
+        )
+
+        // Assert
+        expect(getConfigScope.isDone()).toBeTrue();
+        expect(headRegExpConfigs.length).toBeGreaterThan(0);
+        expect(headRegExpConfigs.length).toEqual(headRegExpConfigsWithRegExp.length);
+        expect(baseRegExpConfigs.length).toBeGreaterThan(0);
+        expect(baseRegExpConfigs.length).toEqual(baseRegExpConfigs.length);
+        expect.assertions(5);
+    });
+
+    it("throws an error for an invalid config file", async () => {
         // Arrange
         const getConfigScope = nock("https://api.github.com")
             .persist()
@@ -60,7 +93,6 @@ describe("Config file loader", () => {
     });
 
     it("throws an error for a directory", async () => {
-
         // Arrange
         const getConfigScope = nock("https://api.github.com")
             .persist()
@@ -77,7 +109,6 @@ describe("Config file loader", () => {
     });
 
     it("throws an error for no contents", async () => {
-
         // Arrange
         const getConfigScope = nock("https://api.github.com")
             .persist()

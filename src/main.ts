@@ -14,37 +14,40 @@ const defaults: ConfigEntry[] = [
 export const context = github.context;
 
 export async function run() {
-  try {
-    const repoToken: string = core.getInput("repo-token", { required: true });
+  const repoToken: string = core.getInput("repo-token", { required: true });
 
-    core.debug(`context: ${context ? JSON.stringify(context) : ''}`);
+  core.debug(`context: ${context ? JSON.stringify(context) : ''}`);
 
-    if (context && context.payload && context.payload.repository && context.payload.pull_request) {
-      const octokit = new github.GitHub(repoToken);
-      const repoConfig: ConfigEntry[] = await getConfig(octokit, CONFIG_FILENAME, context);
-      core.debug(`repoConfig: ${JSON.stringify(repoConfig)}`);
-      const config: ConfigEntry[] = repoConfig.length > 0 ? repoConfig : defaults;
-      core.debug(`config: ${JSON.stringify(config)}`);
-      const headRef = context.payload.pull_request.head.ref;
-      const baseRef = context.payload.pull_request.base.ref;
+  if (context && context.payload && context.payload.repository && context.payload.pull_request) {
+    const octokit = new github.GitHub(repoToken);
+    const repoConfig: ConfigEntry[] = await getConfig(octokit, CONFIG_FILENAME, context);
+    core.debug(`repoConfig: ${JSON.stringify(repoConfig)}`);
+    const config: ConfigEntry[] = repoConfig.length > 0 ? repoConfig : defaults;
+    core.debug(`config: ${JSON.stringify(config)}`);
+    const headRef = context.payload.pull_request.head.ref;
+    const baseRef = context.payload.pull_request.base.ref;
 
-      const labelsToAdd = config.map(entry => entry.getLabel(headRef, baseRef))
-        .filter(label => label !== undefined)
-        .map(label => label!);
+    const labelsToAdd = config.map(entry => entry.getLabel(headRef, baseRef))
+      .filter(label => label !== undefined)
+      .map(label => label!);
 
-      if (labelsToAdd.length > 0) {
-        core.debug(`Adding labels: ${labelsToAdd}`);
-        await octokit.issues.addLabels({
-          issue_number: context.payload.pull_request.number,
-          labels: labelsToAdd,
-          ...context.repo
-        });
-      }
+    core.debug(`Adding labels: ${labelsToAdd}`);
+
+    if (labelsToAdd.length > 0) {
+      await octokit.issues.addLabels({
+        issue_number: context.payload.pull_request.number,
+        labels: labelsToAdd,
+        ...context.repo
+      });
     }
-  } catch (error) {
-    core.setFailed(error.message);
-    throw error;
   }
+
 }
 
-run();
+try {
+  run();
+} catch (error) {
+  core.error(`ERROR! ${JSON.stringify(error)}`);
+  core.setFailed(error.message);
+  throw error;
+}

@@ -62,3 +62,22 @@ If you specify both, `head` and `base`, it will be seen as an AND condition:
 ```
 
 Note: If there are multiple rules matching one branch, all of the labels will be added to the PR. One example of this would be a configuration that contains the feature and subtask rules. If a new PR with `head` and `base` matching `feature/*` will be opened, the PR gets the labels `feature` AND `🧩 Subtask`.
+
+You can also specify regular expressions:
+
+```yaml
+# Apply label "🧩 Subtask" if head and base match "feature/*"
+🧩 Subtask:
+  headRegExp: 'feature[/].*'
+  baseRegExp: 'feature[/].*'
+```
+
+When using regular expressions you may also use group match numbers as labels:
+
+```yaml
+# Apply whatever comes after "release/" as the label when matching against base of "release/*"
+$1:
+  baseRegExp: 'release[/](.*)'
+```
+
+In this example if you were merging into the `release/1.0.0` branch, the label `1.0.0` would be applied.
