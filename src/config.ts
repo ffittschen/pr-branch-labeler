@@ -25,7 +25,7 @@ export async function getConfig(github: github.GitHub, fileName: string, context
     }
     return parseConfig(response.data.content);
   } catch (error) {
-    core.error(`ERROR! ${JSON.stringify(error)}`);
+    core.debug(`getConfig error: ${JSON.stringify(error)}`);
     if (error.status === 404) {
       return [];
     }
