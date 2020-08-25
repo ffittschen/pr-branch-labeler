@@ -34,7 +34,7 @@ export async function run() {
           labels.push(entry.label);
         }
       } else if (entry.head && isMatch(headRef, entry.head)) {
-        core.debug(`Matched "${headRef}" to "${entry.head}". Setting label to "${entry.label}"`);
+        core.info(`Matched "${headRef}" to "${entry.head}". Setting label to "${entry.label}"`);
         labels.push(entry.label);
       } else if (entry.base && isMatch(baseRef, entry.base)) {
         core.debug(`Matched "${baseRef}" to "${entry.base}". Setting label to "${entry.label}"`);
