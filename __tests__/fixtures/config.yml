@@ -13,3 +13,18 @@ release: # Apply label "release" if base matches "release/*"
 🧩 Subtask: # Apply label "🧩 Subtask" if head and base match "feature/*"
   head: "feature/*"
   base: "feature/*"
+
+# RegExp head and base usage
+choreregex:
+  headRegExp: 'chore-regex[/].*' # Apply label "choreregex" if head matches "chore-regex/*"
+bugfixregex: # Apply label "bugfixregex" if head matches one of "bugfix-regex/*" or "hotfix-regex/*"
+  headRegExp: ['bugfix-regex[/].*', 'hotfix-regex[/].*']
+releaseregex: # Apply label "releaseregex" if base matches "release-regex/*"
+  baseRegExp: 'release-regex[/].*'
+🧩 Subtaskregex: # Apply label "🧩 Subtaskregex" if head and base match "feature-regex/*"
+  headRegExp: 'feature-regex[/].*'
+  baseRegExp: 'feature-regex[/].*'
+
+# Dynamic tags based on branch
+$1:
+  baseRegExp: 'release-regexp[/](.*)'

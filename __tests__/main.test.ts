@@ -214,6 +214,142 @@ describe("PR Branch Labeler", () => {
     });
   });
 
+  describe("Regular headRegExp and baseRegExp usage", () => {
+    it("adds the 'bugfixregex' label for 'bugfix-regex/FOO-42-squash-bugs' to 'master'", async () => {
+      // Arrange
+      const getConfigScope = nock("https://api.github.com")
+        .persist()
+        .get(`/repos/Codertocat/Hello-World/contents/.github/pr-branch-labeler.yml?ref=${main.context.payload.pull_request.head.sha}`)
+        .reply(200, configFixture());
+
+      const postLabelsScope = nock("https://api.github.com")
+        .persist()
+        .post("/repos/Codertocat/Hello-World/issues/42/labels", body => {
+          expect(body).toMatchObject({
+            labels: ["bugfixregex"]
+          });
+          return true;
+        })
+        .reply(200);
+
+      main.context.payload = createPullRequestOpenedFixture("bugfix-regex/FOO-42-squash-bugs", "master", main.context.payload.pull_request.head.sha);
+
+      // Act
+      await main.run();
+
+      // Assert
+      expect(getConfigScope.isDone()).toBeTrue();
+      expect(postLabelsScope.isDone()).toBeTrue();
+      expect.assertions(3);
+    });
+
+    it("adds the 'bugfixregex' label for 'hotfix-regex/FOO-42-squash-bugs' to 'master'", async () => {
+      // Arrange
+      const getConfigScope = nock("https://api.github.com")
+        .persist()
+        .get(`/repos/Codertocat/Hello-World/contents/.github/pr-branch-labeler.yml?ref=${main.context.payload.pull_request.head.sha}`)
+        .reply(200, configFixture());
+
+      const postLabelsScope = nock("https://api.github.com")
+        .persist()
+        .post("/repos/Codertocat/Hello-World/issues/42/labels", body => {
+          expect(body).toMatchObject({
+            labels: ["bugfixregex"]
+          });
+          return true;
+        })
+        .reply(200);
+
+      main.context.payload = createPullRequestOpenedFixture("hotfix-regex/FOO-42-squash-bugs", "master", main.context.payload.pull_request.head.sha);
+
+      // Act
+      await main.run();
+
+      // Assert
+      expect(getConfigScope.isDone()).toBeTrue();
+      expect(postLabelsScope.isDone()).toBeTrue();
+      expect.assertions(3);
+    });
+
+    it("adds the 'releaseregex' and 'fixregex' labels for 'bugfix-regex/FOO-42-changes' to 'release-regex/1.0.0'", async () => {
+      // Arrange
+      const getConfigScope = nock("https://api.github.com")
+        .persist()
+        .get(`/repos/Codertocat/Hello-World/contents/.github/pr-branch-labeler.yml?ref=${main.context.payload.pull_request.head.sha}`)
+        .reply(200, configFixture());
+
+      const postLabelsScope = nock("https://api.github.com")
+        .persist()
+        .post("/repos/Codertocat/Hello-World/issues/42/labels", body => {
+          expect(body.labels).toIncludeAllMembers(["bugfixregex", "releaseregex"]);
+          return true;
+        })
+        .reply(200);
+
+      main.context.payload = createPullRequestOpenedFixture("bugfix-regex/FOO-42-changes", "release-regex/1.0.0", main.context.payload.pull_request.head.sha);
+
+      // Act
+      await main.run();
+
+      // Assert
+      expect(getConfigScope.isDone()).toBeTrue();
+      expect(postLabelsScope.isDone()).toBeTrue();
+      expect.assertions(3);
+    });
+
+    it("adds the '🧩 Subtaskregex' label for 'feature-regex/FOO-42-part' to 'feature-regex/FOO-42-whole'", async () => {
+      // Arrange
+      const getConfigScope = nock("https://api.github.com")
+        .persist()
+        .get(`/repos/Codertocat/Hello-World/contents/.github/pr-branch-labeler.yml?ref=${main.context.payload.pull_request.head.sha}`)
+        .reply(200, configFixture());
+
+      const postLabelsScope = nock("https://api.github.com")
+        .persist()
+        .post("/repos/Codertocat/Hello-World/issues/42/labels", body => {
+          expect(body.labels).toIncludeAllMembers(["🧩 Subtaskregex"]);
+          return true;
+        })
+        .reply(200);
+
+      main.context.payload = createPullRequestOpenedFixture("feature-regex/FOO-42-part", "feature-regex/FOO-42-whole", main.context.payload.pull_request.head.sha);
+
+      // Act
+      await main.run();
+
+      // Assert
+      expect(getConfigScope.isDone()).toBeTrue();
+      expect(postLabelsScope.isDone()).toBeTrue();
+      expect.assertions(3);
+    });
+
+    it("adds the '1.0.0' label for 'feature-regex/FOO-42-part' to 'release-regexp/1.0.0'", async () => {
+      // Arrange
+      const getConfigScope = nock("https://api.github.com")
+        .persist()
+        .get(`/repos/Codertocat/Hello-World/contents/.github/pr-branch-labeler.yml?ref=${main.context.payload.pull_request.head.sha}`)
+        .reply(200, configFixture());
+
+      const postLabelsScope = nock("https://api.github.com")
+        .persist()
+        .post("/repos/Codertocat/Hello-World/issues/42/labels", body => {
+          expect(body.labels).toIncludeAllMembers(["1.0.0"]);
+          return true;
+        })
+        .reply(200);
+
+      main.context.payload = createPullRequestOpenedFixture("feature-regex/FOO-42-part", "release-regexp/1.0.0", main.context.payload.pull_request.head.sha);
+
+      // Act
+      await main.run();
+
+      // Assert
+      expect(getConfigScope.isDone()).toBeTrue();
+      expect(postLabelsScope.isDone()).toBeTrue();
+      expect.assertions(3);
+    });
+  });
+
   it("uses the default config when no config was provided", async () => {
     // Arrange
     const getConfigScope = nock("https://api.github.com")
@@ -284,7 +420,9 @@ describe("PR Branch Labeler", () => {
     main.context.payload = createPullRequestOpenedFixture("feature/FOO-42-awesome-stuff", "master", main.context.payload.pull_request.head.sha);
 
     // Act
-    await expect(main.run()).rejects.toThrow(new Error("config.yml has invalid structure."));
+    await expect(main.run())
+      .rejects
+      .toThrow(new Error("config.yml has invalid structure."));
 
     // Assert
     expect(getConfigScope.isDone()).toBeTrue();

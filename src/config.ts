@@ -7,7 +7,8 @@ import { ConfigEntry } from "./ConfigEntry";
 const CONFIG_PATH = ".github";
 
 export async function getConfig(github: github.GitHub, fileName: string, context: Context.Context): Promise<ConfigEntry[]> {
-  console.log('getConfig context', context);
+  // console.log('getConfig context', context);
+
   try {
     const configFile = {
       owner: context.repo.owner,
@@ -25,7 +26,6 @@ export async function getConfig(github: github.GitHub, fileName: string, context
     }
     return parseConfig(response.data.content);
   } catch (error) {
-    core.error(`ERROR! ${JSON.stringify(error)}`);
     if (error.status === 404) {
       return [];
     }
@@ -43,12 +43,35 @@ function parseConfig(content: string): ConfigEntry[] {
   return Object.entries(configObject).reduce((entries: ConfigEntry[], [label, object]: [string, any]) => {
     const headPattern = object.head || (typeof object === "string" || Array.isArray(object) ? object : undefined);
     const basePattern = object.base;
-    if (headPattern || basePattern) {
-      entries.push({ label: label, head: headPattern, base: basePattern });
+    let headRegExp;
+    let baseRegExp;
+
+    try {
+      headRegExp = extractRegExp(object.headRegExp);
+      baseRegExp = extractRegExp(object.baseRegExp);
+    } catch {
+      throw new Error("config.yml has invalid structure.");
+    }
+
+    if (headPattern || basePattern || headRegExp || baseRegExp) {
+      entries.push(new ConfigEntry({
+        label: label,
+        head: headPattern,
+        headRegExp: headRegExp,
+        base: basePattern,
+        baseRegExp: baseRegExp,
+      }));
     } else {
       throw new Error("config.yml has invalid structure.");
     }
 
     return entries;
   }, []);
+}
+
+function extractRegExp(regExpString?: string | string[]): RegExp | RegExp[] | undefined {
+  if (!regExpString) return undefined
+  return Array.isArray(regExpString)
+    ? regExpString.map(x => new RegExp(x.replace('/\/', '/')))
+    : new RegExp(regExpString.replace('/\/', '/'))
 }
