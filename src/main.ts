@@ -1,8 +1,8 @@
 import * as core from "@actions/core";
 import * as github from "@actions/github";
+import matcher from "matcher";
 import { getConfig } from "./config";
 import { ConfigEntry } from "./ConfigEntry";
-import matcher from "matcher";
 
 const CONFIG_FILENAME = "pr-branch-labeler.yml";
 const defaults: ConfigEntry[] = [
@@ -15,41 +15,43 @@ const defaults: ConfigEntry[] = [
 export const context = github.context;
 
 export async function run() {
-  try {
-    const repoToken: string = core.getInput("repo-token", { required: true });
+  const repoToken: string = core.getInput("repo-token", { required: true });
 
-    if (context && context.payload && context.payload.repository && context.payload.pull_request) {
-      const octokit = new github.GitHub(repoToken);
-      const repoConfig: ConfigEntry[] = await getConfig(octokit, CONFIG_FILENAME, context.repo);
-      const config: ConfigEntry[] = repoConfig.length > 0 ? repoConfig : defaults;
-      const headRef = context.payload.pull_request.head.ref;
-      const baseRef = context.payload.pull_request.base.ref;
-      const labelsToAdd = config.reduce((labels: string[], entry) => {
-        if (entry.head && entry.base) {
-          if (isMatch(headRef, entry.head) && isMatch(baseRef, entry.base)) {
-            labels.push(entry.label);
-          }
-        } else if (entry.head && isMatch(headRef, entry.head)) {
-          labels.push(entry.label);
-        } else if (entry.base && isMatch(baseRef, entry.base)) {
+  core.debug(`context: ${context ? JSON.stringify(context) : ''}`);
+
+  if (context && context.payload && context.payload.repository && context.payload.pull_request) {
+    const octokit = new github.GitHub(repoToken);
+    const repoConfig: ConfigEntry[] = await getConfig(octokit, CONFIG_FILENAME, context);
+    core.debug(`repoConfig: ${JSON.stringify(repoConfig)}`);
+    const config: ConfigEntry[] = repoConfig.length > 0 ? repoConfig : defaults;
+    core.debug(`config: ${JSON.stringify(config)}`);
+    const headRef = context.payload.pull_request.head.ref;
+    const baseRef = context.payload.pull_request.base.ref;
+    const labelsToAdd = config.reduce((labels: string[], entry) => {
+      if (entry.head && entry.base) {
+        if (isMatch(headRef, entry.head) && isMatch(baseRef, entry.base)) {
+          core.info(`Matched "${headRef}" to "${entry.head}" and "${baseRef}" to "${entry.base}". Setting label to "${entry.label}"`);
           labels.push(entry.label);
         }
-
-        return labels;
-      }, []);
-
-      if (labelsToAdd.length > 0) {
-        core.debug(`Adding labels: ${labelsToAdd}`);
-        await octokit.issues.addLabels({
-          issue_number: context.payload.pull_request.number,
-          labels: labelsToAdd,
-          ...context.repo
-        });
+      } else if (entry.head && isMatch(headRef, entry.head)) {
+        core.info(`Matched "${headRef}" to "${entry.head}". Setting label to "${entry.label}"`);
+        labels.push(entry.label);
+      } else if (entry.base && isMatch(baseRef, entry.base)) {
+        core.info(`Matched "${baseRef}" to "${entry.base}". Setting label to "${entry.label}"`);
+        labels.push(entry.label);
       }
+
+      return labels;
+    }, []);
+
+    if (labelsToAdd.length > 0) {
+      core.debug(`Adding labels: ${labelsToAdd}`);
+      await octokit.issues.addLabels({
+        issue_number: context.payload.pull_request.number,
+        labels: labelsToAdd,
+        ...context.repo
+      });
     }
-  } catch (error) {
-    core.setFailed(error.message);
-    throw error;
   }
 }
 
@@ -59,4 +61,10 @@ function isMatch(ref: string, patterns: string | string[]): boolean {
     : matcher.isMatch(ref, patterns);
 }
 
-run();
+try {
+  run();
+} catch (error) {
+  core.error(`ERROR! ${JSON.stringify(error)}`);
+  core.setFailed(error.message);
+  throw error;
+}
