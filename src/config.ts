@@ -1,12 +1,12 @@
 import * as core from "@actions/core";
-import * as github from "@actions/github";
+import * as  utils from '@actions/github/lib/utils';
 import * as Context from '@actions/github/lib/context';
 import yaml from "js-yaml";
 import path from "path";
 import { ConfigEntry } from "./ConfigEntry";
 const CONFIG_PATH = ".github";
 
-export async function getConfig(github: github.GitHub, fileName: string, context: Context.Context): Promise<ConfigEntry[]> {
+export async function getConfig(github: InstanceType<typeof utils.GitHub>, fileName: string, context: Context.Context): Promise<ConfigEntry[]> {
   try {
     const configFile = {
       owner: context.repo.owner,
@@ -15,7 +15,7 @@ export async function getConfig(github: github.GitHub, fileName: string, context
       ref: context.payload.pull_request!.head.sha,
     };
     core.debug(`Getting contents of ${JSON.stringify(configFile)}`);
-    const response = await github.repos.getContents(configFile);
+    const response = await github.repos.getContent(configFile);
     if (Array.isArray(response.data)) {
       throw new Error(`${fileName} is not a file.`);
     }

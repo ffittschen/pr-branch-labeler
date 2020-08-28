@@ -20,7 +20,7 @@ export async function run() {
   core.debug(`context: ${context ? JSON.stringify(context) : ''}`);
 
   if (context && context.payload && context.payload.repository && context.payload.pull_request) {
-    const octokit = new github.GitHub(repoToken);
+    const octokit = github.getOctokit(repoToken);
     const repoConfig: ConfigEntry[] = await getConfig(octokit, CONFIG_FILENAME, context);
     core.debug(`repoConfig: ${JSON.stringify(repoConfig)}`);
     const config: ConfigEntry[] = repoConfig.length > 0 ? repoConfig : defaults;
