@@ -126,3 +126,6 @@ Temporary Items
 
 lib/src
 lib/__tests__
+
+# IDE
+.idea
