@@ -1,9 +1,9 @@
 {
-  "name": "node12-template-action",
+  "name": "pr-branch-labeler",
   "version": "0.0.0",
   "private": true,
-  "description": "Node 12 template action",
-  "main": "lib/main.js",
+  "description": "Automatically label your PRs based on their branches.",
+  "main": "lib/index.js",
   "scripts": {
     "build": "tsc",
     "test": "jest"
@@ -20,21 +20,21 @@
   "author": "Florian Fittschen",
   "license": "MIT",
   "dependencies": {
-    "@actions/core": "^1.2.4",
-    "@actions/github": "^1.1.0",
-    "js-yaml": "^3.13.1",
-    "matcher": "^2.0.0"
+    "@actions/core": "^1.2.5",
+    "@actions/github": "^4.0.0",
+    "js-yaml": "^3.14.0",
+    "matcher": "^3.0.0"
   },
   "devDependencies": {
-    "@types/jest": "^24.0.13",
-    "@types/js-yaml": "^3.12.1",
+    "@types/jest": "^26.0.10",
+    "@types/js-yaml": "^3.12.5",
     "@types/node": "^12.0.4",
-    "jest": "^24.8.0",
-    "jest-circus": "^24.7.1",
-    "jest-extended": "^0.11.2",
-    "nock": "^11.3.1",
-    "ts-jest": "^24.0.2",
-    "typescript": "^3.5.1"
+    "jest": "^26.4.2",
+    "jest-circus": "^26.4.2",
+    "jest-extended": "^0.11.5",
+    "nock": "^13.0.4",
+    "ts-jest": "^26.3.0",
+    "typescript": "^4.0.2"
   },
   "jest": {
     "setupFilesAfterEnv": [
