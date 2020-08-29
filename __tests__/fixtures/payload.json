@@ -3,8 +3,7 @@
   "pull_request": {
     "number": 1,
     "head": {
-      "ref": "feature/awesome-stuff",
-      "sha": "0123456"
+      "ref": "feature/awesome-stuff"
     },
     "base": {
       "ref": "master"
