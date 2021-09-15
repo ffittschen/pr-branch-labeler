@@ -23,6 +23,8 @@ jobs:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
+*Warning*: if the Pull Requests submitted on your repository come from a fork, you must use the event `pull_request_target` instead of `pull_request`. This will grant write permissions to `secrets.GITHUB_TOKEN`. If you use `pull_request`, the `secrets.GITHUB_TOKEN` will have read-only permissions which does not work. See [GitHub Action event pull_request_target](https://docs.github.com/en/actions/reference/events-that-trigger-workflows#pull_request_target) reference.
+
 ## Configuration
 
 Configure the PR Branch Labeler action by creating a `.github/pr-branch-labeler.yml` file, e.g. with the following:
