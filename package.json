@@ -20,7 +20,7 @@
   "author": "Florian Fittschen",
   "license": "MIT",
   "dependencies": {
-    "@actions/core": "^1.2.4",
+    "@actions/core": "^1.2.6",
     "@actions/github": "^1.1.0",
     "js-yaml": "^3.13.1",
     "matcher": "^2.0.0"
